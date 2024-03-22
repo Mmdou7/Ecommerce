@@ -17,8 +17,8 @@ public class UsersManager : IUsersManager
     {
         var user = _userRepository.GetUserById(id);
         if (user == null)
-            return null;
-        
+            throw new ValidationException($"User with ID {id} not found.");
+
         return new UserReadDTO
         {
             Id = id,
@@ -39,28 +39,28 @@ public class UsersManager : IUsersManager
             LastLoginTime = x.LastLoginTime,
         });
     }
-    public int Add(UserAddDTO userAdd)
+    public int Add(UserAddDTO user)
     {
-        User user = new User
+        User userEntity = new User
         {
-            Username = userAdd.Username,
-            Email = userAdd.Email,
-            Password = userAdd.Password,
-            LastLoginTime = userAdd.LastLoginTime,
+            Username = user.Username,
+            Email = user.Email,
+            Password = user.Password,
+            LastLoginTime = user.LastLoginTime,
         };
-        _userRepository.AddUser(user);
+        _userRepository.AddUser(userEntity);
         _userRepository.SaveChanges();
-        return user.Id;
+        return userEntity.Id;
     }
-    public bool Update(UserUpdateDTO userUpdate)
+    public bool Update(UserUpdateDTO user)
     {
-        User? user = _userRepository.GetUserById(userUpdate.Id);
-        if (user == null) return false;
-        user.Username = userUpdate.Username;
-        user.Email = userUpdate.Email;
-        user.Password = userUpdate.Password;
+        User? userEntity = _userRepository.GetUserById(user.Id);
+        if (userEntity == null) return false;
+        userEntity.Username = user.Username;
+        userEntity.Email = user.Email;
+        userEntity.Password = user.Password;
 
-        _userRepository.UpdateUser(user);
+        _userRepository.UpdateUser(userEntity);
         _userRepository.SaveChanges();
 
         return true;
