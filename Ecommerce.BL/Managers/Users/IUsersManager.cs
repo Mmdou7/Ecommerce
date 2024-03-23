@@ -9,5 +9,6 @@ public interface IUsersManager
     int Add(UserAddDTO user);
     bool Update(UserUpdateDTO user);
     bool Delete(int id);
+    string Login(LoginDTO model);
 
 }

@@ -1,5 +1,6 @@
 ﻿using Ecommerce.BL;
 using Ecommerce.BL.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +17,7 @@ namespace Ecommerce.APIs.Controllers.Users
         }
 
         [HttpGet]
+        [Authorize]
         public ActionResult<List<UserReadDTO>> GetAll()
         {
             return _usersManager.GetUsers().ToList();
@@ -58,6 +60,13 @@ namespace Ecommerce.APIs.Controllers.Users
                 NotFound();
 
             return NoContent();
+        }
+        [HttpPost]
+        [Route("login")]
+        public ActionResult<string> Login(LoginDTO model)
+        {
+            var token = _usersManager.Login(model);
+            return Ok(token);
         }
     }
 }

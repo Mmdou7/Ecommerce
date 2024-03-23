@@ -1,16 +1,22 @@
 ﻿using Azure.Core;
 using Ecommerce.BL.DTOs;
 using Ecommerce.DAL;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Ecommerce.BL;
 
 public class UsersManager : IUsersManager
 {
     private readonly IUserRepository _userRepository;
-    public UsersManager(IUserRepository userRepository)
+    private readonly IConfiguration _configuration;
+    public UsersManager(IUserRepository userRepository, IConfiguration configuration)
     {
         _userRepository = userRepository;
-        
+        _configuration = configuration;
     }
 
     public UserReadDTO GetById(int id)
@@ -76,5 +82,40 @@ public class UsersManager : IUsersManager
 
         return true;
     }
-    
+
+    public string Login(LoginDTO model)
+    {
+        var existedUser = _userRepository.GetAll().FirstOrDefault(x => x.Username == model.UserName && x.Password == model.Password);
+        if (existedUser is not null)
+        {
+            var userClaims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, existedUser.Username),
+                new Claim(ClaimTypes.Email , $"{existedUser.Username}@gmail.com"),
+                new Claim("Nationality","Egyptian")
+            };
+
+            var secretKey = _configuration["SecretKey"];
+
+            var secretKeyInBytes = Encoding.ASCII.GetBytes(secretKey);
+
+            var key = new SymmetricSecurityKey(secretKeyInBytes);
+
+            var methodUsedInGeneratingToken = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
+
+            var jwt = new JwtSecurityToken(
+                claims: userClaims,
+                notBefore: DateTime.Now,
+                expires: DateTime.Now.AddMinutes(15),
+                signingCredentials: methodUsedInGeneratingToken
+                );
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            string tokenString = tokenHandler.WriteToken(jwt);
+
+            return tokenString;
+
+        }
+        throw new ValidationException($"Not Auth");
+    }
 }
