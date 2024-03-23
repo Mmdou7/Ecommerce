@@ -11,17 +11,19 @@ namespace Ecommerce.BL;
 
 public class UsersManager : IUsersManager
 {
-    private readonly IUserRepository _userRepository;
+    //private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
-    public UsersManager(IUserRepository userRepository, IConfiguration configuration)
+    private readonly IUnitOfWork _unitOfWork;
+    public UsersManager(IUnitOfWork unitOfWork, IConfiguration configuration)
     {
-        _userRepository = userRepository;
+        //_userRepository = userRepository;
+        _unitOfWork = unitOfWork;
         _configuration = configuration;
     }
 
     public UserReadDTO GetById(int id)
     {
-        var user = _userRepository.GetUserById(id);
+        var user = _unitOfWork.UserRepository.GetById(id);
         if (user == null)
             throw new ValidationException($"User with ID {id} not found.");
 
@@ -36,7 +38,7 @@ public class UsersManager : IUsersManager
 
     public IEnumerable<UserReadDTO> GetUsers()
     {
-        var users = _userRepository.GetAll();
+        var users = _unitOfWork.UserRepository.GetAll();
         return users.Select(x => new UserReadDTO
         {
             Id = x.Id,
@@ -54,38 +56,38 @@ public class UsersManager : IUsersManager
             Password = user.Password,
             LastLoginTime = user.LastLoginTime,
         };
-        _userRepository.AddUser(userEntity);
-        _userRepository.SaveChanges();
+        _unitOfWork.UserRepository.Add(userEntity);
+        _unitOfWork.SaveChanges();
         return userEntity.Id;
     }
     public bool Update(UserUpdateDTO user)
     {
-        User? userEntity = _userRepository.GetUserById(user.Id);
+        User? userEntity = _unitOfWork.UserRepository.GetById(user.Id);
         if (userEntity == null) return false;
         userEntity.Username = user.Username;
         userEntity.Email = user.Email;
         userEntity.Password = user.Password;
 
-        _userRepository.UpdateUser(userEntity);
-        _userRepository.SaveChanges();
+        _unitOfWork.UserRepository.Update(userEntity);
+        _unitOfWork.SaveChanges();
 
         return true;
     }
 
     public bool Delete(int id)
     {
-        User? user = _userRepository.GetUserById(id);
+        User? user = _unitOfWork.UserRepository.GetById(id);
         if (user == null) return false;
 
-        _userRepository.DeleteUser(user);
-        _userRepository.SaveChanges();
+        _unitOfWork.UserRepository.Delete(user);
+        _unitOfWork.SaveChanges();
 
         return true;
     }
 
     public string Login(LoginDTO model)
     {
-        var existedUser = _userRepository.GetAll().FirstOrDefault(x => x.Username == model.UserName && x.Password == model.Password);
+        var existedUser = _unitOfWork.UserRepository.GetAll().FirstOrDefault(x => x.Username == model.UserName && x.Password == model.Password);
         if (existedUser is not null)
         {
             var userClaims = new List<Claim>

@@ -17,7 +17,7 @@ namespace Ecommerce.APIs.Controllers.Users
         }
 
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         public ActionResult<List<UserReadDTO>> GetAll()
         {
             return _usersManager.GetUsers().ToList();
@@ -37,7 +37,7 @@ namespace Ecommerce.APIs.Controllers.Users
             var newId = _usersManager.Add(user);
             return CreatedAtAction(nameof(GetById),
                 new { Id = newId },
-                new GeneralResponse("Added"));
+                new GeneralResponse("Added Successfully"));
         }
 
         [HttpPut]

@@ -31,8 +31,14 @@ builder.Services.AddAuthentication("default")
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
                 );
-builder.Services.AddScoped<IUserRepository,UserRepository>();
-builder.Services.AddScoped<IUsersManager, UsersManager>();
+
+builder.Services.AddTransient<IUsersManager,UsersManager>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+
+//builder.Services.AddTransient(typeof(IGenericRepository<>),typeof(GenericRepository<>));
+//builder.Services.AddScoped<IUserRepository,UserRepository>();
+//builder.Services.AddScoped<IUsersManager, UsersManager>();
 
 
 var app = builder.Build();
