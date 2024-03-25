@@ -11,12 +11,10 @@ namespace Ecommerce.BL;
 
 public class UsersManager : IUsersManager
 {
-    //private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
     private readonly IUnitOfWork _unitOfWork;
     public UsersManager(IUnitOfWork unitOfWork, IConfiguration configuration)
     {
-        //_userRepository = userRepository;
         _unitOfWork = unitOfWork;
         _configuration = configuration;
     }
@@ -49,6 +47,10 @@ public class UsersManager : IUsersManager
     }
     public int Add(UserAddDTO user)
     {
+        if (_unitOfWork.UserRepository.GetAll().Where(x=>x.Username == user.Username || x.Email == user.Email).Any())
+        {
+            throw new ValidationException("Username already exists.");
+        }
         User userEntity = new User
         {
             Username = user.Username,

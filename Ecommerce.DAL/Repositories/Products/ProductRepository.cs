@@ -1,4 +1,4 @@
-﻿namespace Ecommerce.DAL;
+﻿namespace Ecommerce.DAL.Repositories.Products;
 
 public class ProductRepository : GenericRepository<Product>, IProductRepository
 {

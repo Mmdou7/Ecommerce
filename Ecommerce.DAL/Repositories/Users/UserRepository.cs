@@ -9,6 +9,11 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         _applicationDbContext = applicationDbContext;
     }
 
+    public bool ExistsByUsername(string username)
+    {
+        return _applicationDbContext.Users.Any(u => u.Username == username);
+    }
+
     //public IEnumerable<User> GetAll()
     //{
     //    return _applicationDbContext.Set<User>();
