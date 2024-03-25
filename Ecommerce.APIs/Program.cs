@@ -33,6 +33,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 );
 
 builder.Services.AddTransient<IUsersManager,UsersManager>();
+builder.Services.AddTransient<IProductManager, ProductManager>();
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
