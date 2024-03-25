@@ -8,5 +8,5 @@ public class User
     public string Email { get; set; } = string.Empty;
     public DateTime LastLoginTime { get; set; }
 
-    public ICollection<Product> Products { get; set; } = new HashSet<Product>();
+    public ICollection<UserProduct> UserProducts { get; set; } = new HashSet<UserProduct>();
 }

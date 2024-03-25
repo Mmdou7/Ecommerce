@@ -12,5 +12,5 @@ public class Product
     public int DiscountRate { get; set; }
 
     public Category Category { get; set; } = null!;
-    public ICollection<User> Users { get; set; } = new HashSet<User>();
+    public ICollection<UserProduct> UserProducts { get; set; } = new HashSet<UserProduct>();
 }

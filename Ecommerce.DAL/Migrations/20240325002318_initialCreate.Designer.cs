@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ecommerce.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240321021156_DAL")]
-    partial class DAL
+    [Migration("20240325002318_initialCreate")]
+    partial class initialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -149,25 +149,36 @@ namespace Ecommerce.DAL.Migrations
                         {
                             Id = 1,
                             Email = "john@example.com",
-                            LastLoginTime = new DateTime(2024, 3, 21, 2, 11, 56, 553, DateTimeKind.Utc).AddTicks(3374),
+                            LastLoginTime = new DateTime(2024, 3, 25, 0, 23, 18, 199, DateTimeKind.Utc).AddTicks(9069),
                             Password = "password123",
                             Username = "john_doe"
                         });
                 });
 
-            modelBuilder.Entity("ProductUser", b =>
+            modelBuilder.Entity("Ecommerce.DAL.UserProduct", b =>
                 {
-                    b.Property<int>("ProductsId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("UsersId")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.HasKey("ProductsId", "UsersId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("UsersId");
+                    b.HasKey("Id");
 
-                    b.ToTable("ProductUser");
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserProduct");
                 });
 
             modelBuilder.Entity("Ecommerce.DAL.Product", b =>
@@ -181,24 +192,38 @@ namespace Ecommerce.DAL.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("ProductUser", b =>
+            modelBuilder.Entity("Ecommerce.DAL.UserProduct", b =>
                 {
-                    b.HasOne("Ecommerce.DAL.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsId")
+                    b.HasOne("Ecommerce.DAL.Product", "Product")
+                        .WithMany("UserProducts")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Ecommerce.DAL.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
+                    b.HasOne("Ecommerce.DAL.User", "User")
+                        .WithMany("UserProducts")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Ecommerce.DAL.Category", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("Ecommerce.DAL.Product", b =>
+                {
+                    b.Navigation("UserProducts");
+                });
+
+            modelBuilder.Entity("Ecommerce.DAL.User", b =>
+                {
+                    b.Navigation("UserProducts");
                 });
 #pragma warning restore 612, 618
         }

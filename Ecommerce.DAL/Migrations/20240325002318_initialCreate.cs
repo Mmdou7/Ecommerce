@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Ecommerce.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class DAL : Migration
+    public partial class initialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -68,24 +68,27 @@ namespace Ecommerce.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductUser",
+                name: "UserProduct",
                 columns: table => new
                 {
-                    ProductsId = table.Column<int>(type: "int", nullable: false),
-                    UsersId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductUser", x => new { x.ProductsId, x.UsersId });
+                    table.PrimaryKey("PK_UserProduct", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProductUser_Products_ProductsId",
-                        column: x => x.ProductsId,
+                        name: "FK_UserProduct_Products_ProductId",
+                        column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProductUser_Users_UsersId",
-                        column: x => x.UsersId,
+                        name: "FK_UserProduct_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -103,7 +106,7 @@ namespace Ecommerce.DAL.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Email", "LastLoginTime", "Password", "Username" },
-                values: new object[] { 1, "john@example.com", new DateTime(2024, 3, 21, 2, 11, 56, 553, DateTimeKind.Utc).AddTicks(3374), "password123", "john_doe" });
+                values: new object[] { 1, "john@example.com", new DateTime(2024, 3, 25, 0, 23, 18, 199, DateTimeKind.Utc).AddTicks(9069), "password123", "john_doe" });
 
             migrationBuilder.InsertData(
                 table: "Products",
@@ -120,16 +123,21 @@ namespace Ecommerce.DAL.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductUser_UsersId",
-                table: "ProductUser",
-                column: "UsersId");
+                name: "IX_UserProduct_ProductId",
+                table: "UserProduct",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserProduct_UserId",
+                table: "UserProduct",
+                column: "UserId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ProductUser");
+                name: "UserProduct");
 
             migrationBuilder.DropTable(
                 name: "Products");
